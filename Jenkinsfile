@@ -48,7 +48,6 @@ pipeline {
               value: "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
             - name: AWS_ROLE_ARN
               value: ${params.CBJ_ROLE}
-
         - name: jfrogcli
           image: docker.bintray.io/jfrog/jfrog-cli-go
           command: ['cat']
@@ -56,8 +55,11 @@ pipeline {
           env:
             - name: DOCKER_HOST
               value: tcp://localhost:2375
-
-              """
+            - name: AWS_WEB_IDENTITY_TOKEN_FILE
+              value: "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+            - name: AWS_ROLE_ARN
+              value: ${params.CBJ_ROLE}
+            """
           }
   }
 
@@ -78,6 +80,7 @@ pipeline {
        steps {
         container("docker-daemon") {
         sh '''
+        ls -altr
         docker build . -t campapp-sandbox-test -f Dockerfile
         docker tag campapp-sandbox-test:latest artifactory.cloud.cms.gov/artifactory/cre-sandbox-cloudbees-dev-docker-prod-local/campapp-sandbox-test:LATEST
         '''
@@ -88,10 +91,10 @@ pipeline {
     stage('jfrogpush') {
       steps {
         container('jfrogcli') {
-          withCredentials([usernamePassword(credentialsId: 'test-jfrog')]) {
+          withCredentials([usernamePassword(credentialsId: 'test-jfrog', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
             sh '''
               apk add docker
-              jfrog rt config jfrog-arti --url https://artifactory.cloud.cms.gov/artifactory
+              jfrog rt config jfrog-arti --url https://artifactory.cloud.cms.gov/artifactory --user $USER --password $PASS
               jfrog rt config show jfrog-arti
               jfrog rt docker-push aartifactory.cloud.cms.gov/artifactory/cre-sandbox-cloudbees-dev-docker-prod-local/campapp-sandbox-test:LATEST docker --build-name=cre-testing-camp --build-number=${BUILD_NUMBER}
               jfrog rt build-publish tcre-testing-camp ${BUILD_NUMBER}
