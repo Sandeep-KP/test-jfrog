@@ -107,7 +107,7 @@ pipeline {
           }
         }
       }
-    }
+      }
 
           stage('Xray Scan'){
             when {
@@ -125,5 +125,7 @@ pipeline {
                 }
             }
           }
+
   }
 }
+
