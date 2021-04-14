@@ -124,6 +124,6 @@ pipeline {
                     echo xrayResults as String
                 }
             }
-
+          }
   }
 }
