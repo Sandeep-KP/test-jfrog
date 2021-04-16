@@ -62,8 +62,6 @@ pipeline {
               value: ${params.CBJ_ROLE}
             - name: JFROG_CLI_BUILD_NUMBER
               value: ${env.BUILD_NUMBER}
-            - name: JFROG_CLI_BUILD_NAME
-              value: ${env.BUILD_NAME}
             """
           }
   }
@@ -101,30 +99,14 @@ pipeline {
               apk add docker
               jfrog config add jfrog-arti --artifactory-url=https://artifactory.cloud.cms.gov/artifactory --user $USER --password $PASS
               jfrog config show jfrog-arti
-              jfrog rt docker-push artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/cre-testing-camp:latest docker --build-name=${JFROG_CLI_BUILD_NAME} --build-number=${JFROG_CLI_BUILD_NUMBER}
-              
+              jfrog rt docker-push artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/cre-testing-camp:latest docker --build-name=cre-testing-camp --build-number=${JFROG_CLI_BUILD_NUMBER}
+              jfrog rt build-scan cre-testing-camp ${JFROG_CLI_BUILD_NUMBER}
             '''
           }
         }
       }
       }
 
-          stage('Xray Scan'){
-            when {
-                expression { return params.XRAY_SCAN }
-            }
-            steps {
-                script {
-                    xrayConfig = [
-                        'buildName'   : ${JFROG_CLI_BUILD_NAME},
-                        'buildNumber' : ${JFROG_CLI_BUILD_NUMBER},
-
-                    ]
-                    xrayResults = rtServer.xrayScan xrayConfig
-                    echo xrayResults as String
-                }
-            }
-          }
 
   }
 }
