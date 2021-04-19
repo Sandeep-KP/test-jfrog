@@ -62,8 +62,6 @@ pipeline {
               value: ${params.CBJ_ROLE}
             - name: JFROG_CLI_BUILD_NUMBER
               value: ${env.BUILD_NUMBER}
-            // - name: JFROG_CLI_BUILD_NAME
-            //   value: ${env.BUILD_NAME}
             """
           }
   }
