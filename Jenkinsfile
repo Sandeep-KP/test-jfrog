@@ -99,7 +99,6 @@ pipeline {
               apk add docker
               jfrog config add jfrog-arti --artifactory-url=https://artifactory.cloud.cms.gov/artifactory --user $USER --password $PASS
               jfrog config show jfrog-arti
-              docker tag cre-testing-camp:latest artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/cre-testing-camp:latest
               jfrog rt docker-push artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/cre-testing-camp:latest docker --build-name=cre-testing-camp --build-number=${JFROG_CLI_BUILD_NUMBER}
               jfrog rt bp cre-testing-camp ${JFROG_CLI_BUILD_NUMBER}
               jfrog rt bs cre-testing-camp ${JFROG_CLI_BUILD_NUMBER}
