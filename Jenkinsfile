@@ -84,8 +84,8 @@ pipeline {
         container("docker-daemon") {
         sh '''
         ls -altr
-        docker build . -t campapp-sandbox-test -f Dockerfile
-        docker tag campapp-sandbox-test artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local
+        docker build . -t cre-testing-camp -f Dockerfile
+        docker tag cre-testing-camp artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/cre-testing-camp
         '''
         }
        }
@@ -99,7 +99,7 @@ pipeline {
               apk add docker
               jfrog config add jfrog-arti --artifactory-url=https://artifactory.cloud.cms.gov/artifactory --user $USER --password $PASS
               jfrog config show jfrog-arti
-              jfrog rt docker-push artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/campapp-sandbox-test docker --build-name=cre-testing-camp --build-number=${JFROG_CLI_BUILD_NUMBER}
+              jfrog rt docker-push artifactory.cloud.cms.gov/cre-sandbox-cloudbees-dev-docker-prod-local/cre-testing-camp:latest docker --build-name=cre-testing-camp --build-number=${JFROG_CLI_BUILD_NUMBER}
               jfrog rt bp cre-testing-camp ${JFROG_CLI_BUILD_NUMBER}
               jfrog rt bs cre-testing-camp ${JFROG_CLI_BUILD_NUMBER}
             '''
